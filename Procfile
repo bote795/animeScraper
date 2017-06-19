@@ -1,1 +1,1 @@
-web: python animeScraper/hello.py
+web: python hello.py
