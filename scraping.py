@@ -49,14 +49,21 @@ def convertElementsToJSON(elements):
         WrapperDict["a"]=tempArray
     return WrapperDict
 
-def insertTodb(item, db):
+def insertTodb(item, db, uri):
     anime = db["anime"]
-    anime.insert_one(item)
+    try:
+        anime.insert_one(item)
+    except pymongo.errors.DuplicateKeyError, e:
+        updateTodb(item,db,uri)
 
 def updateTodb(item, db, uri):
-	anime = db["anime"]
-	query = {'uri': uri}
-	anime.update(query,{'$set': item})
+    anime = db["anime"]
+    query = {'uri': uri}
+    if "uri" in item:
+        item.pop('url', None)
+    if "_id" in item:
+        item.pop('_id', None)
+    anime.update(query,{'$set': item})
 
 def insertUrlTodb(item, db):
     anime = db["anime_urls"]
@@ -69,9 +76,9 @@ def getData(app,uri, xpath):
         completeDict["uri"]= uri
         completeDict["updatedOn"]=datetime.datetime.utcnow()
         completeDict["data"]=convertElementsToJSON(elements)
-     	client = pymongo.MongoClient(url)
-     	db = client.get_default_database()
-        insertTodb(completeDict,db)
+        client = pymongo.MongoClient(url)
+        db = client.get_default_database()
+        insertTodb(completeDict,db, uri)
         insertUrlTodb({"uri": uri, "xpath": xpath}, db)
         client.close()
         return {'succdeed': True, 'data': completeDict["data"]}
@@ -85,8 +92,8 @@ def getDataLocal(uri, xpath):
         elements = find_by_xpath(uri, xpath)
         completeDict["data"]=convertElementsToJSON(elements)
         completeDict["updatedOn"]=datetime.datetime.utcnow()
-     	client = pymongo.MongoClient(url)
-     	db = client.get_default_database()
+        client = pymongo.MongoClient(url)
+        db = client.get_default_database()
         updateTodb(completeDict,db, uri)
         client.close()
         return True
@@ -95,10 +102,10 @@ def getDataLocal(uri, xpath):
         return False
 
 def ChronTask():
-	client = pymongo.MongoClient(url)
- 	db = client.get_default_database()
- 	for urlObj in db["anime_urls"].find():
- 		print urlObj["uri"]
-   		getDataLocal(urlObj["uri"], urlObj["xpath"])
-   	print "done Task"
-   	client.close()
+    client = pymongo.MongoClient(url)
+    db = client.get_default_database()
+    for urlObj in db["anime_urls"].find():
+        print urlObj["uri"]
+        getDataLocal(urlObj["uri"], urlObj["xpath"])
+    print "done Task"
+    client.close()

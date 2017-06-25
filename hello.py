@@ -35,8 +35,17 @@ def getAllUris():
             data.append(item)
     return jsonify({"status": "ok", "data": data})
 
+@app.route("/uri" , methods=['DELETE'])
+def deleteUri():
+    try:
+        value = unquote(request.args.get('uri'))
+        result = mongo.db["anime_urls"].delete_one( { "uri": value })
+        return jsonify({"status": "ok"})
+    except Exception as error:
+        return jsonify({"status": "fail"})
+
 @app.route('/addUri', methods=['POST'])
-def login():
+def addUri():
     result = getData(app,request.form['uri'],request.form["xpath"].encode('utf-8'))
     if result["succdeed"]:
         return jsonify({"status": "ok", 'data': result["data"]})
