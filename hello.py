@@ -25,6 +25,16 @@ def getUris():
             data.append(temp)
     return jsonify({"status": "ok", "data": data})
 
+@app.route("/uri")
+def getAllUris():
+    data = []
+    data2= mongo.db["anime_urls"].find()
+    for item in data2:
+        if item is not None: #check if noneType
+            item.pop("_id")
+            data.append(item)
+    return jsonify({"status": "ok", "data": data})
+
 @app.route('/addUri', methods=['POST'])
 def login():
     result = getData(app,request.form['uri'],request.form["xpath"].encode('utf-8'))
