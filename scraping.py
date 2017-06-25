@@ -74,10 +74,10 @@ def getData(app,uri, xpath):
         insertTodb(completeDict,db)
         insertUrlTodb({"uri": uri, "xpath": xpath}, db)
         client.close()
-        return True
+        return {'succdeed': True, 'data': completeDict["data"]}
     except Exception as error:
         app.logger.warning(error)
-        return False
+        return {'succdeed': False}
 
 def getDataLocal(uri, xpath):
     try:

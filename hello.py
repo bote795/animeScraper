@@ -28,8 +28,8 @@ def getUris():
 @app.route('/addUri', methods=['POST'])
 def login():
     result = getData(app,request.form['uri'],request.form["xpath"].encode('utf-8'))
-    if result:
-        return jsonify({"status": "ok"})
+    if result["succdeed"]:
+        return jsonify({"status": "ok", 'data': result["data"]})
     else:
         return jsonify({"status": "fail"})
 
