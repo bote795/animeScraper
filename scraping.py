@@ -85,7 +85,20 @@ def getData(app,uri, xpath):
     except Exception as error:
         app.logger.warning(error)
         return {'succdeed': False}
+#used to test what gets returned by scrape
+def returnScrape(app,uri, xpath):
+    try:
+        completeDict = {}
+        elements = find_by_xpath(uri, xpath)
+        completeDict["uri"]= uri
+        completeDict["updatedOn"]=datetime.datetime.utcnow()
+        completeDict["data"]=convertElementsToJSON(elements)
+        return {'succdeed': True, 'data': completeDict["data"]}
+    except Exception as error:
+        app.logger.warning(error)
+        return {'succdeed': False}
 
+#used to update db from chron task every 30 mins
 def getDataLocal(uri, xpath):
     try:
         completeDict = {}

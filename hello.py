@@ -52,6 +52,14 @@ def addUri():
     else:
         return jsonify({"status": "fail"})
 
+@app.route('/testScrape', methods=['POST'])
+def testUri():
+    result = returnScrape(app,request.form['uri'],request.form["xpath"].encode('utf-8'))
+    if result["succdeed"]:
+        return jsonify({"status": "ok", 'data': result["data"]})
+    else:
+        return jsonify({"status": "fail"})
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
