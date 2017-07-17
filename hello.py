@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import sys
 from urllib import unquote
 from flask_pymongo import PyMongo
-from scraping import getData
+from scraping import getData, returnScrape
 import logging
 import os
 from logging.handlers import RotatingFileHandler
